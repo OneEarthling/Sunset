@@ -28,6 +28,7 @@ public class SunsetFragment extends Fragment {
     private int mNightSkyColor;
     private AnimatorSet mSunriseAnimatorSet;
     private AnimatorSet mSunsetAnimatorSet;
+    private AnimatorSet mSunHeatAnimatorSet;
     private boolean mSunBack = false;
 
 
@@ -64,7 +65,6 @@ public class SunsetFragment extends Fragment {
                     }
                 }
                 mSunBack = !mSunBack;
-                startSunHeatAnimation();
             }
         });
         return view;
@@ -73,6 +73,11 @@ public class SunsetFragment extends Fragment {
     private void startAnimation(){
         float sunYStart = mSunView.getTop();
         float sunYEnd = mSkyView.getHeight();
+
+//        if (mSunHeatAnimatorSet != null) {
+//            mSunHeatAnimatorSet.end();
+//            mSunHeatAnimatorSet = null;
+//        }
 
         ObjectAnimator heightAnimator = ObjectAnimator
                 .ofFloat(mSunView, "y", sunYStart, sunYEnd)
@@ -127,19 +132,24 @@ public class SunsetFragment extends Fragment {
                 .after(nightSkyAnimator);
 
         mSunriseAnimatorSet.start();
+        startSunHeatAnimation();
     }
 
     private void startSunHeatAnimation() {
         ObjectAnimator heatAnimator = ObjectAnimator
                 .ofPropertyValuesHolder(mSunView,
-                        PropertyValuesHolder.ofFloat("scaleX", 1.1f),
-                        PropertyValuesHolder.ofFloat("scaleY", 1.1f))
+                        PropertyValuesHolder.ofFloat("scaleX", 0.9f),
+                        PropertyValuesHolder.ofFloat("scaleY", 0.9f))
                 .setDuration(3000);
         heatAnimator.setRepeatCount(ObjectAnimator.INFINITE);
         heatAnimator.setRepeatMode(ObjectAnimator.REVERSE);
         heatAnimator.setInterpolator(new AccelerateDecelerateInterpolator());
 
-        heatAnimator.start();
+        mSunriseAnimatorSet = new AnimatorSet();
+        mSunriseAnimatorSet
+                .play(heatAnimator);
+
+        mSunriseAnimatorSet.start();
     }
 
 }
